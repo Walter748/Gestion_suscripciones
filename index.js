@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Suscripciones</title>
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1,
+        h2 {
+            color: #333;
+        }
+
+        /* Header y Footer */
+        header,
+        footer {
+            background-color: #3498db;
+            color: white;
+            text-align: center;
+        }
+
+        header {
+            padding: 0.5rem;
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            flex: 1;
+            text-align: center;
+        }
+
+        /* Diseño de grid */
+        .grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Estilos de las tarjetas */
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Estilos para las suscripciones */
+        .subscription {
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+        }
+
+        .subscription:last-child {
+            border-bottom: none;
+        }
+
+        .subscription-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .subscription-actions {
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+
+        .btn-cancel {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-contact {
+            background-color: #3498db;
+            color: white;
+        }
+
+        /* Estilos para los cambios de precio */
+        .price-change {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .price-change:last-child {
+            border-bottom: none;
+        }
+
+        .price-increase {
+            color: #e74c3c;
+        }
+
+        .price-decrease {
+            color: #2ecc71;
+        }
+
+        /* Estilos para el historial de pagos */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #ddd;
+        }
+
+        /* Estilos para notificaciones */
+        .notification-icon {
+            background-color: transparent;
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            border: none;
+            font-size: 20px;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: 0px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 10px;
+        }
+
+        /* Estilo del contenedor */
+        .notification-container {
+            position: relative;
+        }
+
+        /* Menú desplegable oculto inicialmente */
+        .notification-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            width: 200px;
+            visibility: hidden;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        /* Lista dentro del menú */
+        .notification-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .notification-menu li {
+            padding: 3px;
+            border-bottom: 1px solid #eee;
+            color: black;
+            font-size: 14px;
+        }
+
+        .notification-menu li:last-child {
+            border-bottom: none;
+        }
+
+        .notification-menu li:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Mostrar el menú al presionar el botón */
+        .notification-icon.active + .notification-menu {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Estilos para el modal */
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #modal:target {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            width: 400px;
+            max-width: 90%;
+            text-align: center;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: #3498db;
+        }
+
+        .modal-content input {
+            width: 90%;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .modal-content button {
+            width: 48%;
+            margin: 10px 1%;
+            padding: 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .modal-content button.cancel-btn {
+            background-color: #e74c3c;
+        }
+
+        .modal-content button:hover {
+            background-color: #2980b9;
+        }
+
+        .modal-content button.cancel-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .notification-item {
+            background-color: #f8d7da;
+            color: #000;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <h1>Gestor de Suscripciones</h1>
+            <div class="notification-container">
+                <button class="notification-icon" id="notificationButton">
+                    🔔
+                    <span class="notification-badge">2</span>
+                </button>
+                <div class="notification-menu" id="notificationMenu">
+                    <ul>
+                        <li>
+                            <div class="notification-item">
+                                Alerta: Tu suscripción a Netflix se renovará en 3 días.
+                            </div>
+                        </li>
+                        <li>
+                            <div class="notification-item">
+                                Alerta: Has recibido una nueva recomendación de ahorro para tus suscripciones.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="grid">
+            <section class="card">
+                <h2>Suscripciones Activas</h2>
+                <div class="subscription">
+                    <div class="subscription-header">
+                        <div>
+                            <h3>Netflix</h3>
+                            <p>Entretenimiento</p>
+                        </div>
+                        <div>
+                            <p><strong>$15.99/mes</strong></p>
+                            <p>Próximo cobro: 01/07/2023</p>
+                        </div>
+                    </div>
+                    <div class="subscription-actions">
+                        <button class="btn btn-cancel" onclick="openModal()">Cancelar Suscripción</button>
+                        <button class="btn btn-contact">Contactar</button>
+                    </div>
+                </div>
+                <div class="subscription">
+                    <div class="subscription-header">
+                        <div>
+                            <h3>Spotify</h3>
+                            <p>Música</p>
+                        </div>
+                        <div>
+                            <p><strong>$09.99/mes</strong></p>
+                            <p>Próximo cobro: 15/07/2023</p>
+                        </div>
+                    </div>
+                    <div class="subscription-actions">
+                        <button class="btn btn-cancel" onclick="openModal()">Cancelar Suscripción</button>
+                        <button class="btn btn-contact">Contactar</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Cambios de Precios</h2>
+                <div class="price-change">
+                    <div>
+                        <h3>Netflix</h3>
+                        <p>Efectivo desde: 01/08/2023</p>
+                    </div>
+                    <div class="price-increase">
+                        ▲ $2.00
+                    </div>
+                </div>
+                <div class="price-change">
+                    <div>
+                        <h3>Spotify</h3>
+                        <p>Efectivo desde: 15/07/2023</p>
+                    </div>
+                    <div class="price-decrease">
+                        ▼ $1.00
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <section class="card">
+            <h2>Historial de Pagos</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Servicio</th>
+                        <th>Fecha</th>
+                        <th>Monto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Netflix</td>
+                        <td>01/06/2023</td>
+                        <td>$15.99</td>
+                    </tr>
+                    <tr>
+                        <td>Spotify</td>
+                        <td>15/06/2023</td>
+                        <td>$09.99</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <!-- Modal -->
+    <div id="modal">
+        <div class="modal-content">
+            <h2>Confirmar Cancelación</h2>
+            <input placeholder="¿Por qué estás cancelando la suscripción?" rows="4"></input>
+            <button onclick="closeModal()">Confirmar</button>
+            <button class="cancel-btn" onclick="closeModal()">Cancelar</button>
+        </div>
+    </div>
+
+    <script>
+        const notificationButton = document.getElementById('notificationButton');
+        const notificationMenu = document.getElementById('notificationMenu');
+
+        // Mostrar el menú de notificaciones cuando se hace clic
+        notificationButton.addEventListener('click', () => {
+            notificationButton.classList.toggle('active');
+        });
+
+        function openModal() {
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>
