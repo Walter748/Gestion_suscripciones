@@ -22,7 +22,6 @@
             padding: 20px;
         }
 
-        h1,
         h2 {
             color: #333;
         }
@@ -217,7 +216,7 @@
         }
 
         /* Mostrar el menú al presionar el botón */
-        .notification-icon.active + .notification-menu {
+        .notification-icon.active+.notification-menu {
             visibility: visible;
             opacity: 1;
             transform: translateY(0);
@@ -295,6 +294,94 @@
             border-radius: 5px;
             border: 1px solid #f5c6cb;
         }
+
+        /* Estilos del buscador */
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex: 1;
+            justify-content: flex-end;
+        }
+
+        .search-input {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 200px;
+        }
+
+        .search-button {
+            padding: 5px 10px;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .search-button:hover {
+            background-color: #ccc;
+        }
+
+        .titulo-con-boton {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .titulo-con-boton h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .btn-agregar {
+            display: flex;
+            align-items: center;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-left: 10px;
+        }
+
+        .btn-agregar i {
+            margin-right: 5px;
+            font-size: 1rem;
+        }
+
+        .btn-agregar:hover {
+            background-color: #0056b3;
+        }
+
+        /* Estilo para el ícono de más */
+        .icono-mas {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            position: relative;
+            margin-right: 5px;
+        }
+
+        .icono-mas::before,
+        .icono-mas::after {
+            content: '';
+            position: absolute;
+            background-color: white;
+            width: 100%;
+            height: 2px;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+        }
+
+        .icono-mas::after {
+            transform: translateY(-50%) rotate(90deg);
+        }
     </style>
 </head>
 
@@ -302,6 +389,10 @@
     <header>
         <div class="container">
             <h1>Gestor de Suscripciones</h1>
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Buscar suscripciones...">
+                <button class="search-button">🔍</button>
+            </div>
             <div class="notification-container">
                 <button class="notification-icon" id="notificationButton">
                     🔔
@@ -328,7 +419,12 @@
     <main class="container">
         <div class="grid">
             <section class="card">
-                <h2>Suscripciones Activas</h2>
+                <div class="titulo-con-boton">
+                    <h2>Suscripciones Activas</h2>
+                    <button class="btn-agregar">
+                        <span class="icono-mas"></span>
+                    </button>
+                </div>
                 <div class="subscription">
                     <div class="subscription-header">
                         <div>
@@ -342,6 +438,7 @@
                     </div>
                     <div class="subscription-actions">
                         <button class="btn btn-cancel" onclick="openModal()">Cancelar Suscripción</button>
+                        <button class="btn btn-contact">Agregar Persona</button>
                     </div>
                 </div>
                 <div class="subscription">
@@ -357,6 +454,7 @@
                     </div>
                     <div class="subscription-actions">
                         <button class="btn btn-cancel" onclick="openModal()">Cancelar Suscripción</button>
+                        <button class="btn btn-contact">Agregar Persona</button>
                     </div>
                 </div>
             </section>
